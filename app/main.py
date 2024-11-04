@@ -1,5 +1,4 @@
-from abc import ABC
-from typing import Any
+from typing import Any, Type
 
 
 class IntegerRange:
@@ -31,7 +30,7 @@ class Visitor:
         self.height = height
 
 
-class SlideLimitationValidator(ABC):
+class SlideLimitationValidator:
     def __init__(self, age: int, weight: int, height: int) -> None:
         self.age = age
         self.weight = weight
@@ -52,17 +51,15 @@ class AdultSlideLimitationValidator(SlideLimitationValidator):
 
 class Slide:
     def __init__(self, name: str,
-                 limitation_class: SlideLimitationValidator) -> None:
+                 limitation_class: Type[SlideLimitationValidator]) -> None:
         self.name = name
         self.limitation_class = limitation_class
 
     def can_access(self, visitor: Visitor) -> bool:
         try:
-            self.limitation_class(visitor.age, visitor.weight, visitor.height)
+            self.limitation_class(age=visitor.age,
+                                  weight=visitor.weight,
+                                  height=visitor.height)
             return True
-        except TypeError:
-            print("TypeError Occurred and Handled")
-            return False
-        except ValueError:
-            print("ValueError Occurred and Handled")
+        except (TypeError, ValueError):
             return False
